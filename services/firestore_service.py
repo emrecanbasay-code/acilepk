@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 def get_firestore_db():
     """Firestore veritabanı bağlantısını başlatır ve döndürür"""
     if not hasattr(st, 'firestore_db'):
-        cred_dict = st.secrets["firebase_credentials"]
+        cred_dict = st.secrets["firebase"]
         cred = credentials.Certificate(cred_dict)
 
         if not firebase_admin._apps:
