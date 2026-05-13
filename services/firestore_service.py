@@ -11,7 +11,28 @@ from datetime import datetime, timedelta
 def get_firestore_db():
     """Firestore veritabanı bağlantısını başlatır ve döndürür"""
     if not hasattr(st, 'firestore_db'):
-        cred_dict = st.secrets["firebase"]
+        raw_cred = st.secrets["firebase"]
+
+        # Convert to dict if it's a Box object (Streamlit secrets)
+        if hasattr(raw_cred, 'to_dict'):
+            cred_dict = raw_cred.to_dict()
+        elif isinstance(raw_cred, dict):
+            cred_dict = raw_cred
+        else:
+            # Fallback: manually build the dict
+            cred_dict = {
+                "type": st.secrets["firebase"]["type"],
+                "project_id": st.secrets["firebase"]["project_id"],
+                "private_key_id": st.secrets["firebase"]["private_key_id"],
+                "private_key": st.secrets["firebase"]["private_key"],
+                "client_email": st.secrets["firebase"]["client_email"],
+                "client_id": st.secrets["firebase"]["client_id"],
+                "auth_uri": st.secrets["firebase"]["auth_uri"],
+                "token_uri": st.secrets["firebase"]["token_uri"],
+                "auth_provider_x509_cert_url": st.secrets["firebase"]["auth_provider_x509_cert_url"],
+                "client_x509_cert_url": st.secrets["firebase"]["client_x509_cert_url"]
+            }
+
         cred = credentials.Certificate(cred_dict)
 
         if not firebase_admin._apps:
